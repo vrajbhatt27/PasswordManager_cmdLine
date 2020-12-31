@@ -6,15 +6,18 @@ operation = None
 param = None
 data = None
 
+
 def initial():
     global data, operation, param
     #  Opens a file and read data from it. If file is empty then it creates a new data dict
     try:
-        f = open('data.json')
+        f = open(r'C:/Users/91982\Desktop/Jarvis/Python/Python  Projects/pwd manager/data.json')
         data = json.load(f)
         f.close()
     except:
         data = {}
+
+    
 
     if len(argv) != 3:
         print("Less Arguments")
@@ -22,16 +25,18 @@ def initial():
         operation = argv[1]
         param = argv[2]
 
+
 def write2file():
     # writes data to file
     try:
         with open('data.json', 'w') as f:
             json.dump(data, f, ensure_ascii=True, indent=2)
-        
+
         print("File Updated")
     except:
         print("!!! File Updation Failed !!!")
-    
+
+
 def getData(param):
     if param == '1':
         field = input("field: ")
@@ -50,6 +55,7 @@ def getData(param):
         data[domain] = info
 
     write2file()
+
 
 def showData(param):
     if param != 'all':
@@ -71,13 +77,14 @@ def showData(param):
 
             print()
 
+
 def updateData(param):
     val = data[param]
     if type(val) == dict:
-        print("What do u want to update? : ",end=' ')
+        print("What do u want to update? : ", end=' ')
         for k in val.keys():
-            print("[{0}]".format(k),end=' ')
-        
+            print("[{0}]".format(k), end=' ')
+
         print()
 
         field = input("Enter field: ")
@@ -92,22 +99,25 @@ def updateData(param):
     write2file()
     # print(data)
 
+
 def deleteData(param):
     data.pop(param)
-    print(param,"Deleted Successfully")
+    print(param, "Deleted Successfully")
     write2file()
 
+
 if __name__ == "__main__":
-    verify = getpass(prompt="Password: ",stream=None)
-    print()
+    verify = getpass(prompt="Password: ", stream=None)
+
     if verify == '1423':
         initial()
+        print(operation, param)
         if operation == 'w':
             getData(param)
         elif operation == 'r':
             showData(param)
         elif operation == 'u':
-            updateData(param)  
+            updateData(param)
         elif operation == 'd':
             deleteData(param)
     else:
