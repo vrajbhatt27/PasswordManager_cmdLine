@@ -2,6 +2,8 @@ import json
 import sys
 from sys import argv
 from getpass import getpass
+import config
+
 
 operation = None
 param = None
@@ -11,6 +13,9 @@ data = None
 def initial():
     global data, operation, param
     #  Opens a file and read data from it. If file is empty then it creates a new data dict
+
+    config.decrypt_json()
+
     try:
         f = open(
             r'C:/Users/91982/Desktop/Jarvis/Python/Python Projects/pwd manager/data.json')
@@ -26,6 +31,7 @@ def initial():
 
     if len(argv) != 3:
         print("Less Arguments")
+        sys.exit(0)
     else:
         operation = argv[1]
         param = argv[2]
@@ -50,8 +56,8 @@ def write2file():
 
 def getData(param):
     if param == '1':
-        field = input("field: ")
-        pwd = input("password: ")
+        field = input("Enter field: ")
+        pwd = input("Enter password: ")
 
         data[field] = pwd
     elif param == '2':
@@ -132,5 +138,9 @@ if verify == '1423':
         updateData(param)
     elif operation == 'd':
         deleteData(param)
+
 else:
     print("!!! Wrong password !!!")
+
+
+config.encrypt_json()
