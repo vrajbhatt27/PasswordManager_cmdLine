@@ -76,6 +76,7 @@ def decrypt_json():
 if __name__ == "__main__":
     print('\n')
     tprint("pswd\nManager", "larry3D-xlarge")
+    decrypt_json()
     setPrimaryKey()
     if encrypted == True:
         encrypt_json()

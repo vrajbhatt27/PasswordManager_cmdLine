@@ -31,6 +31,7 @@ def initial():
 
     if len(argv) != 3:
         print("Less Arguments")
+        config.encrypt_json()
         sys.exit(0)
     else:
         operation = argv[1]
@@ -40,6 +41,7 @@ def initial():
 def fexists(param):
     if (param not in data.keys()) and (param != 'all'):
         print("!!! Not present in file !!!")
+        config.encrypt_json()
         sys.exit(0)
 
 
