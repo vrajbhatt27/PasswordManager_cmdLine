@@ -14,24 +14,16 @@ def initial():
     global data, operation, param
     #  Opens a file and read data from it. If file is empty then it creates a new data dict
 
-    config.decrypt_json()
-
     try:
         f = open(
-            r'C:/Users/91982/Desktop/Jarvis/Python/Python Projects/pwd manager/data.json')
+            r'./data.json')
         data = json.load(f)
         f.close()
     except:
         data = {}
 
-    # f = open(
-    #     r'C:/Users/91982/Desktop/Jarvis/Python/Python Projects/pwd manager/data.json')
-    # data = json.load(f)
-    # f.close()
-
     if len(argv) != 3:
         print("Less Arguments")
-        config.encrypt_json()
         sys.exit(0)
     else:
         operation = argv[1]
@@ -41,14 +33,13 @@ def initial():
 def fexists(param):
     if (param not in data.keys()) and (param != 'all'):
         print("!!! Not present in file !!!")
-        config.encrypt_json()
         sys.exit(0)
 
 
 def write2file():
     # writes data to file
     try:
-        with open(r'C:/Users/91982/Desktop/Jarvis/Python/Python Projects/pwd manager/data.json', 'w') as f:
+        with open(r'./data.json', 'w') as f:
             json.dump(data, f, ensure_ascii=True, indent=2)
 
         print("File Updated")
@@ -60,6 +51,7 @@ def getData(param):
     if param == '1':
         field = input("Enter field: ")
         pwd = input("Enter password: ")
+        pwd = config.encrypt_json(pwd)
 
         data[field] = pwd
     elif param == '2':
@@ -69,6 +61,7 @@ def getData(param):
         info = {}
         for i in fields:
             inp = input(i+": ")
+            inp = config.encrypt_json(inp)
             info[i] = inp
 
         data[domain] = info
@@ -83,17 +76,18 @@ def showData(param):
 
         if type(data[res]) == dict:
             for k, v in data[res].items():
+                v = config.decrypt_json(v)
                 print(k, ": ", v)
         else:
-            print(data[res])
+            print(config.decrypt_json(data[res]))
     elif param == 'all':
         for k, v in data.items():
             if type(v) == dict:
                 print("---{0}---".format(k))
                 for f, d in v.items():
-                    print("\t{0}: {1}".format(f, d))
+                    print("\t{0}: {1}".format(f, config.decrypt_json(d)))
             else:
-                print("{0}: {1}".format(k, v))
+                print("{0}: {1}".format(k, config.decrypt_json(v)))
 
             print()
 
@@ -110,15 +104,16 @@ def updateData(param):
 
         field = input("Enter field: ")
         value = input("Enter Value: ")
+        value = config.encrypt_json(value)
         val[field] = value
 
         data[param] = val
     else:
         value = input("Enter value: ")
+        value = config.encrypt_json(value)
         data[param] = value
 
     write2file()
-    # print(data)
 
 
 def deleteData(param):
@@ -143,6 +138,3 @@ if verify == '1423':
 
 else:
     print("!!! Wrong password !!!")
-
-
-config.encrypt_json()

@@ -3,9 +3,7 @@ from cryptography.fernet import Fernet
 from art import *
 import os
 
-path = 'C:\\Users\\91982\\Desktop\\Jarvis\\Python\\Python Projects\\pwd manager'
 
-encrypted = False
 
 
 class Security:
@@ -27,61 +25,45 @@ class Security:
         f = Fernet(self.key)
         return f.decrypt(data)
 
-# # secondary key (for encryption of main key or promary key)
-# seckey = b'9AYbaPTk8FLtXfTXLhF1GFWcAF_m6Eh859O9e_VQAYU='
-
-# primary symmetric key - (main)
-
-
 def setPrimaryKey():
-    global encrypted
     key = Fernet.generate_key()
 
-    with open(os.path.join(path, 'key.pem'), 'wb') as f:
+    with open(os.path.join(os.getcwd(), 'key.pem'), 'wb') as f:
         f.write(key)
 
     print('New key set')
-    encrypted = True
 
 
-def encrypt_json():
-    with open(os.path.join(path, 'data.json'), 'rb') as f:
-        data = f.read()
+def encrypt_json(data):
+    path = os.path.join(os.getcwd(), 'key.pem')
 
-    with open(os.path.join(path, 'key.pem'), 'r') as f:
+    if(os.path.exists(path)):
+        pass
+    else:
+        setPrimaryKey()
+
+
+    with open(path, 'r') as f:
         key = f.read()
 
     s = Security(key)
     enc_data = s.encrypt_data(data)
 
-    with open(os.path.join(path, 'data.json'), 'wb') as f:
-        f.write(enc_data)
+    return enc_data.decode()
 
 
-def decrypt_json():
-    with open(os.path.join(path, 'data.json'), 'rb') as f:
-        data = f.read()
-
-    with open(os.path.join(path, 'key.pem'), 'r') as f:
+def decrypt_json(data):
+    data = data.encode()
+    with open(os.path.join(os.getcwd(), 'key.pem'), 'r') as f:
         key = f.read()
 
     s = Security(key)
 
     dec_data = s.decrypt_data(data)
 
-    with open(os.path.join(path, 'data.json'), 'wb') as f:
-        f.write(dec_data)
+    return dec_data.decode()
 
 
 if __name__ == "__main__":
     print('\n')
-    tprint("pswd\nManager", "larry3D-xlarge")
-    decrypt_json()
-    setPrimaryKey()
-    if encrypted == True:
-        encrypt_json()
-
-
-# setPrimaryKey()
-# encrypt_json()
-# decrypt_json()
+    # tprint("pswd\nManager", "larry3D-xlarge")
