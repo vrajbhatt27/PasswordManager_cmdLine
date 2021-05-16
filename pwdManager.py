@@ -3,11 +3,13 @@ import sys
 from sys import argv
 from getpass import getpass
 import config
+import pyperclip as clip
 
 
 operation = None
 param = None
 data = None
+toBeCopied = False
 
 
 def initial():
@@ -74,13 +76,25 @@ def showData(param):
     if param != 'all':
         res = param
 
-        if type(data[res]) == dict:
-            for k, v in data[res].items():
-                v = config.decrypt_json(v)
-                print(k, ": ", v)
+        if toBeCopied:
+            if type(data[res]) == dict:
+                for k, v in data[res].items():
+                    v = config.decrypt_json(v)
+                    if(k == 'pwd'):
+                        clip.copy(v)
+                        print("Password Copied for {0}".format(param))
+            else:
+                clip.copy(config.decrypt_json(data[res]))
+                print("Password Copied for {0}".format(param))
         else:
-            print(config.decrypt_json(data[res]))
-    elif param == 'all':
+            if type(data[res]) == dict:
+                for k, v in data[res].items():
+                    v = config.decrypt_json(v)
+                    print(k, ": ", v)
+            else:
+                print(config.decrypt_json(data[res]))
+
+    elif param == 'all' and toBeCopied == False:
         for k, v in data.items():
             if type(v) == dict:
                 print("---{0}---".format(k))
@@ -90,6 +104,8 @@ def showData(param):
                 print("{0}: {1}".format(k, config.decrypt_json(v)))
 
             print()
+    elif param == 'all' and toBeCopied == True:
+        print("!!! Can't Copy !!!")
 
 
 def updateData(param):
@@ -130,6 +146,9 @@ if verify == '1423':
     if operation == 'w':
         getData(param)
     elif operation == 'r':
+        showData(param)
+    elif operation == 'rc':
+        toBeCopied = True
         showData(param)
     elif operation == 'u':
         updateData(param)
