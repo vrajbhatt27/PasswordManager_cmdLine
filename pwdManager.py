@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 from sys import argv
 from getpass import getpass
@@ -24,19 +25,20 @@ def initial():
     except:
         data = {}
 
-    if len(argv) != 3:
-        print("Less Arguments")
-        sys.exit(0)
-    else:
+    if('list' in argv):
         operation = argv[1]
-        param = argv[2]
-
+    else:
+        if len(argv) != 3:
+            print("Less Arguments")
+            sys.exit(0)
+        else:
+            operation = argv[1]
+            param = argv[2]
 
 def fexists(param):
     if (param not in data.keys()) and (param != 'all'):
         print("!!! Not present in file !!!")
         sys.exit(0)
-
 
 def write2file():
     # writes data to file
@@ -47,7 +49,6 @@ def write2file():
         print("File Updated")
     except:
         print("!!! File Updation Failed !!!")
-
 
 def getData(param):
     if param == '1':
@@ -138,6 +139,22 @@ def deleteData(param):
     print(param, "Deleted Successfully")
     write2file()
 
+def getList():
+    map = {}
+    for ind, i in enumerate(list(data.keys())):
+        map[ind] = i
+
+    for k,v in map.items():
+        print(f"[{k}] {v}")
+    print("\n")
+    choice = int(input('>'))
+    res = map[choice]
+    if type(data[res]) == dict:
+        for k, v in data[res].items():
+            v = config.decrypt_json(v)
+            print(k, ": ", v)
+    else:
+        print(config.decrypt_json(data[res]))
 
 verify = getpass(prompt="Password: ", stream=None)
 
@@ -154,6 +171,7 @@ if verify == '1423':
         updateData(param)
     elif operation == 'd':
         deleteData(param)
-
+    elif operation == 'list':
+        getList()
 else:
     print("!!! Wrong password !!!")
