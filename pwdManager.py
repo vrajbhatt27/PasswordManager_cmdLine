@@ -139,6 +139,11 @@ def deleteData(param):
     print(param, "Deleted Successfully")
     write2file()
 
+def getFromAlias(param):
+    param = config.Alias().getAliasValue(param)
+    if param != None:
+        showData(param)
+
 def getList():
     map = {}
     for ind, i in enumerate(list(data.keys())):
@@ -173,5 +178,16 @@ if verify == '1423':
         deleteData(param)
     elif operation == 'list':
         getList()
+    elif operation == 'a':
+        getFromAlias(param)
+    elif operation == 'set':
+        name = input("Enter Alias Name: ")
+        value = input("Enter Alias Value: ")
+        config.Alias().setAlias(name, value)
+    elif operation == 'del':
+        config.Alias().removeAlias(param)
+    elif operation == 'alias':
+        config.Alias().getAliasList()
+
 else:
     print("!!! Wrong password !!!")
