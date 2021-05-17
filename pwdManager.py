@@ -2,10 +2,11 @@ from io import open_code
 import json
 import os
 import sys
-from sys import argv
+from sys import argv, version_info
 from getpass import getpass
 import config
 import pyperclip as clip
+import hashlib
 
 
 operation = None
@@ -27,7 +28,7 @@ def initial():
     except:
         data = {}
 
-    if('list' in argv):
+    if ('list' in argv) or ('configure' in argv):
         operation = argv[1]
     else:
         if len(argv) != 3:
@@ -142,7 +143,7 @@ def deleteData(param):
     write2file()
 
 def getFromAlias(param):
-    param = config.Alias().getAliasValue(param)
+    param = config.Configure().getAliasValue(param)
     if param != None:
         showData(param)
 
@@ -166,7 +167,7 @@ def getList():
 
 cmdPass = config.Configure().getCmdPass()
 verify = getpass(prompt="Password: ", stream=None)
-
+verify = hashlib.md5(verify.encode()).hexdigest() #Converted to md5 hash
 
 if verify == cmdPass:
     initial()
@@ -185,14 +186,10 @@ if verify == cmdPass:
         getList()
     elif operation == 'a':
         getFromAlias(param)
-    elif operation == 'set':
-        name = input("Enter Alias Name: ")
-        value = input("Enter Alias Value: ")
-        config.Alias().setAlias(name, value)
-    elif operation == 'del':
-        config.Alias().removeAlias(param)
     elif operation == 'alias':
-        config.Alias().getAliasList()
+        config.Configure().getAliasList()
+    elif operation == 'configure':
+        config.configure()
 
 else:
     print("!!! Wrong password !!!")

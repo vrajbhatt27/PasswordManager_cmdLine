@@ -1,4 +1,7 @@
 {
-  "alias": {},
-  "pass": "1423"
+  "alias": {
+    "mail": "fake@gmail.com",
+    "media": "Insta"
+  },
+  "pass": "a01610228fe998f515a72dd730294d87"
 }

@@ -2,6 +2,8 @@ import json
 from cryptography.fernet import Fernet
 from art import *
 import os
+import hashlib
+from getpass import getpass
 
 
 class Security:
@@ -24,20 +26,55 @@ class Security:
         return f.decrypt(data)
 
 
-class Alias:
+class Configure:
     def __init__(self):
-        if os.path.exists(os.path.join(os.getcwd(), 'settings.json')) == False:
-            with open(os.path.join(os.getcwd(), 'settings.json'), 'w') as f:
-                data = {'alias': {}}
+        self.settings = None
+        if os.path.exists("./settings.json"):
+            f = open("./settings.json", "r")
+            self.settings = json.load(f)
+            f.close()
+        else:
+            data = {"alias": {}, "pass": ""}
+            with open("./settings.json", "w") as f:
                 json.dump(data, f, ensure_ascii=True, indent=2)
+            self.settings = data
 
-        f = open(r'./settings.json')
-        self.settings = json.load(f)
         self.map = self.settings['alias']
-        f.close()
 
-    def setAlias(self, name, value):
+    def writeTofile(self, data):
+        with open("./settings.json", "w") as f:
+            json.dump(data, f, ensure_ascii=True, indent=2)
+
+        print("___File Updated Successfully___")
+
+    def setCmdPass(self):
+        inp_pwd = getpass(prompt="Enter Current Password: ", stream=None)
+        inp_pwd = hashlib.md5(inp_pwd.encode()).hexdigest()
+
+        old_pwd = self.getCmdPass()
+
+        if inp_pwd == old_pwd:
+            pwd = input("Enter New Pasword: ")
+            pwd = hashlib.md5(pwd.encode()).hexdigest()
+            self.settings["pass"] = pwd
+            self.writeTofile(self.settings)
+        else:
+            print("Wrong Password !!!")
+
+    def getCmdPass(self):
+        if self.settings["pass"] != "":
+            return self.settings["pass"]
+        else:
+            pwd = input("Set a password for app: ")
+            pwd = hashlib.md5(pwd.encode()).hexdigest()
+            self.settings["pass"] = pwd
+            self.writeTofile(self.settings)
+            return self.settings['pass']
+
+    def setAlias(self):
         try:
+            name = input("Enter Alias Name: ")
+            value = input("Enter Alias Value: ")
             self.map[name] = value
             self.settings['alias'] = self.map
             with open("./settings.json", "w") as f:
@@ -54,8 +91,10 @@ class Alias:
             print("Alias Not Present !!!")
             return None
 
-    def removeAlias(self, name):
+    def removeAlias(self):
         try:
+            self.getAliasList()
+            name = input("Enter name of alias to remove: ")
             self.map.pop(name)
             self.settings['alias'] = self.map
             with open("./settings.json", "w") as f:
@@ -77,38 +116,7 @@ class Alias:
         else:
             print("No Alias Present !!!")
 
-
-class Configure:
-    def __init__(self):
-        self.settings = None
-        if os.path.exists("./settings.json"):
-            f = open("./settings.json", "r")
-            self.settings = json.load(f)
-            f.close()
-        else:
-            data = {"alias": {}, "pass": ""}
-            with open("./settings.json", "w") as f:
-                json.dump(data, f, ensure_ascii=True, indent=2)
-            self.settings = data
-
-    def writeTofile(self, data):
-        with open("./settings.json", "w") as f:
-            json.dump(data, f, ensure_ascii=True, indent=2)
-
-        print("___File Updated Successfully___")
-
-    def setCmdPass(self, pwd):
-        self.settings["pass"] = pwd
-        self.writeTofile(self.settings)
-
-    def getCmdPass(self):
-        if self.settings["pass"] != "":
-            return self.settings["pass"]
-        else:
-            pwd = input("Set a password for app: ")
-            self.settings["pass"] = pwd
-            self.writeTofile(self.settings)
-            return self.settings['pass']
+        print()
 
 
 def setPrimaryKey():
@@ -149,7 +157,23 @@ def decrypt_json(data):
     return dec_data.decode()
 
 
-if __name__ == "__main__":
+def configure():
     print('\n')
-    # tprint("pswd\nManager", "larry3D-xlarge")
-    Configure().setCmdPass("hello")
+    tprint("pswd\nManager", "larry3D-xlarge")
+    print(f"[0] Set Alias")
+    print(f"[1] Delete Alias")
+    print(f"[2] Set Commandline Password")
+    print()
+
+    choice = int(input("> "))
+    if choice == 0:
+        Configure().setAlias()
+    elif choice == 1:
+        print("Available Aliases")
+        Configure().removeAlias()
+    elif choice == 2:
+        Configure().setCmdPass()
+
+
+if __name__ == "__main__":
+    configure()
