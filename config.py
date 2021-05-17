@@ -24,44 +24,6 @@ class Security:
         return f.decrypt(data)
 
 
-def setPrimaryKey():
-    key = Fernet.generate_key()
-
-    with open(os.path.join(os.getcwd(), 'key.pem'), 'wb') as f:
-        f.write(key)
-
-    print('New key set')
-
-
-def encrypt_json(data):
-    path = os.path.join(os.getcwd(), 'key.pem')
-
-    if(os.path.exists(path)):
-        pass
-    else:
-        setPrimaryKey()
-
-    with open(path, 'r') as f:
-        key = f.read()
-
-    s = Security(key)
-    enc_data = s.encrypt_data(data)
-
-    return enc_data.decode()
-
-
-def decrypt_json(data):
-    data = data.encode()
-    with open(os.path.join(os.getcwd(), 'key.pem'), 'r') as f:
-        key = f.read()
-
-    s = Security(key)
-
-    dec_data = s.decrypt_data(data)
-
-    return dec_data.decode()
-
-
 class Alias:
     def __init__(self):
         if os.path.exists(os.path.join(os.getcwd(), 'settings.json')) == False:
@@ -116,8 +78,78 @@ class Alias:
             print("No Alias Present !!!")
 
 
+class Configure:
+    def __init__(self):
+        self.settings = None
+        if os.path.exists("./settings.json"):
+            f = open("./settings.json", "r")
+            self.settings = json.load(f)
+            f.close()
+        else:
+            data = {"alias": {}, "pass": ""}
+            with open("./settings.json", "w") as f:
+                json.dump(data, f, ensure_ascii=True, indent=2)
+            self.settings = data
+
+    def writeTofile(self, data):
+        with open("./settings.json", "w") as f:
+            json.dump(data, f, ensure_ascii=True, indent=2)
+
+        print("___File Updated Successfully___")
+
+    def setCmdPass(self, pwd):
+        self.settings["pass"] = pwd
+        self.writeTofile(self.settings)
+
+    def getCmdPass(self):
+        if self.settings["pass"] != "":
+            return self.settings["pass"]
+        else:
+            pwd = input("Set a password for app: ")
+            self.settings["pass"] = pwd
+            self.writeTofile(self.settings)
+            return self.settings['pass']
+
+
+def setPrimaryKey():
+    key = Fernet.generate_key()
+
+    with open(os.path.join(os.getcwd(), 'key.pem'), 'wb') as f:
+        f.write(key)
+
+    print('New key set')
+
+
+def encrypt_json(data):
+    path = os.path.join(os.getcwd(), 'key.pem')
+
+    if(os.path.exists(path)):
+        pass
+    else:
+        setPrimaryKey()
+
+    with open(path, 'r') as f:
+        key = f.read()
+
+    s = Security(key)
+    enc_data = s.encrypt_data(data)
+
+    return enc_data.decode()
+
+
+def decrypt_json(data):
+    data = data.encode()
+    with open(os.path.join(os.getcwd(), 'key.pem'), 'r') as f:
+        key = f.read()
+
+    s = Security(key)
+
+    dec_data = s.decrypt_data(data)
+
+    return dec_data.decode()
+
+
 if __name__ == "__main__":
     print('\n')
     # tprint("pswd\nManager", "larry3D-xlarge")
-    al = Alias()
-    al.getAliasList()
+    Configure().setCmdPass("hello")

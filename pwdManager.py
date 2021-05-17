@@ -1,3 +1,4 @@
+from io import open_code
 import json
 import os
 import sys
@@ -11,6 +12,7 @@ operation = None
 param = None
 data = None
 toBeCopied = False
+cmdPwd = None
 
 
 def initial():
@@ -161,9 +163,12 @@ def getList():
     else:
         print(config.decrypt_json(data[res]))
 
+
+cmdPass = config.Configure().getCmdPass()
 verify = getpass(prompt="Password: ", stream=None)
 
-if verify == '1423':
+
+if verify == cmdPass:
     initial()
     if operation == 'w':
         getData(param)
